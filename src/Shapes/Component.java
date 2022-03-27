@@ -25,6 +25,9 @@ public abstract class Component {
 
     public abstract Double getX();
     public abstract Double getY();
+    public abstract int getWidth();
+    public abstract int getHeight();
+    public abstract Point getPoint();
     public void Add(Shape shape, Color color)
     {
         this.shapes.add(shape);

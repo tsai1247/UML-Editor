@@ -18,17 +18,18 @@ public class Shapes extends Component
         this.strokeWidth = 4;
 
     }
-    
+
     public void setSelected(boolean isSelected)
     {
         if(this.isSelected == isSelected)   return;
         this.isSelected = isSelected;
+
         if(this.isSelected)
         {
-            this.Add(getRectangle(this.getX() + this.width/2, this.getY(), selectedMarkSize), Color.BLACK);
-            this.Add(getRectangle(this.getX() + this.width/2, this.getY() + this.height, selectedMarkSize), Color.BLACK);
-            this.Add(getRectangle(this.getX(), this.getY() + this.height/2, selectedMarkSize), Color.BLACK);
-            this.Add(getRectangle(this.getX() + this.width, this.getY() + this.height/2, selectedMarkSize), Color.BLACK);
+            this.Add(getRectangle(this.getX() + this.width/2, this.getY(), selectedMarkSize), Color.PINK);
+            this.Add(getRectangle(this.getX() + this.width/2, this.getY() + this.height, selectedMarkSize), Color.PINK);
+            this.Add(getRectangle(this.getX(), this.getY() + this.height/2, selectedMarkSize), Color.PINK);
+            this.Add(getRectangle(this.getX() + this.width, this.getY() + this.height/2, selectedMarkSize), Color.PINK);
         }
         else
         {
@@ -58,6 +59,16 @@ public class Shapes extends Component
         return pos.getY();
     }
 
+    public int getWidth()
+    {
+        return this.width;
+    }
+
+    public int getHeight()
+    {
+        return this.height;
+    }
+    
     public Point getPoint()
     {
         return pos;

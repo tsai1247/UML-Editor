@@ -32,13 +32,7 @@ public class Canvas {
                 switch(Menu.currentSelected)
                 {
                     case SELECT:
-                        for(var i : shapes)
-                        {
-                            if(i instanceof Shapes)
-                            {
-                                ((Shapes)i).setSelected(false);
-                            }
-                        }
+                        ClearAllSelected();
                         var curShape = getClickedShape(e.getPoint());
                         if(curShape != null)
                         {
@@ -78,6 +72,7 @@ public class Canvas {
                 switch(Menu.currentSelected)
                 {
                     case SELECT:
+                        PressedPos = getClickedShape(me.getPoint()) == null ? me.getPoint() : null;
                     case USECASE:
                     case CLASS:
                         return;
@@ -93,6 +88,10 @@ public class Canvas {
                 super.mouseReleased(me);
                 switch(Menu.currentSelected)
                 {
+                    case SELECT:
+                        if(PressedPos != null && getDistance(PressedPos, me.getPoint()) > 10)
+                            SelectAllInRegion(PressedPos, me.getPoint());
+                        break;
                     case ASSOCIATION:
                         shapes.add(
                             new association(
@@ -123,9 +122,68 @@ public class Canvas {
                 return;
             }
 
+            private double getDistance(Point startPos, Point endPos) {
+                var x = startPos.getX() - endPos.getX();
+                var y = startPos.getY() - endPos.getY();
+                return x*x + y*y;
+            }
+
+            private boolean smaller(Point p1, Point p2)
+            {
+                return p1.getX() < p2.getX() && p1.getY() < p2.getY();
+            }
+
+            private void SelectAllInRegion(Point startPos, Point endPos) {
+                NormalizeRectPos(startPos, endPos);
+
+                for(var i : shapes)
+                {
+                    var rectStartPos = i.getPoint();
+                    var rectEndPos = new Point();
+                    rectEndPos.x += rectStartPos.getX() + i.getWidth();
+                    rectEndPos.y += rectStartPos.getY() + i.getHeight();
+
+                    boolean condition = smaller(startPos, rectStartPos) && smaller(rectEndPos, endPos);
+                    System.out.println(i.getClass().getName());
+                    
+                    if(i instanceof Shapes)
+                    {
+                        System.out.println("Selected: " + condition);
+                        ((Shapes)i).setSelected(condition);
+                    }
+                }
+            }
+
+            private void NormalizeRectPos(Point startPos, Point endPos) {
+                if(startPos.getX() > endPos.getX())
+                {
+                    var tmp = startPos.x;
+                    startPos.x = endPos.x;
+                    endPos.x = tmp;
+                }
+                if(startPos.getY() > endPos.getY())
+                {
+                    var tmp = startPos.y;
+                    startPos.y = endPos.y;
+                    endPos.y = tmp;
+                }
+                
+            }
+
+            private void ClearAllSelected() {
+                for(var i : shapes)
+                {
+                    if(i instanceof Shapes)
+                        ((Shapes)i).setSelected(false);
+                }
+            }
+
+
         });
+            
     }
 
+    
     protected Shapes getClickedShape(Point point)
     {
 

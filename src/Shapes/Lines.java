@@ -62,4 +62,22 @@ public class Lines extends Component
     public Double getY() {
         return startPos.getY();
     }
+
+
+    @Override
+    public int getWidth() {
+        return (int) (endPos.getX() - startPos.getX());
+    }
+
+
+    @Override
+    public int getHeight() {
+        return (int) (endPos.getY() - startPos.getY());
+    }
+
+
+    @Override
+    public Point getPoint() {
+        return startPos;
+    }
 }
