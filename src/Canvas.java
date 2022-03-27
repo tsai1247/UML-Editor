@@ -32,7 +32,18 @@ public class Canvas {
                 switch(Menu.currentSelected)
                 {
                     case SELECT:
-
+                        for(var i : shapes)
+                        {
+                            if(i instanceof Shapes)
+                            {
+                                ((Shapes)i).setSelected(false);
+                            }
+                        }
+                        var curShape = getClickedShape(e.getPoint());
+                        if(curShape != null)
+                        {
+                            curShape.setSelected(true);
+                        }
                         break;
                     case ASSOCIATION:
                     case COMPOSITION:
@@ -54,9 +65,8 @@ public class Canvas {
                 if(shape != null)
                 {
                     shapes.add(shape);
-                    Repaint();
                 }
-
+                Repaint();
                 super.mouseClicked(e);
             }
 
@@ -81,16 +91,6 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent me) {
                 super.mouseReleased(me);
-                switch(Menu.currentSelected)
-                {
-                    case SELECT:
-                    case USECASE:
-                    case CLASS:
-                        return;
-                    default:
-                        break;
-                }
-
                 switch(Menu.currentSelected)
                 {
                     case ASSOCIATION:
@@ -146,6 +146,7 @@ public class Canvas {
     }
     protected void Repaint() {
         Graphics2D g = (Graphics2D) panel.getGraphics();
+        g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
         for(var shape : shapes)
         {
             g.setStroke(new BasicStroke( shape.getStrokeWidth() ) );
