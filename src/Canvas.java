@@ -1,6 +1,7 @@
 import javax.swing.*;
 
 import Shapes.Component;
+import Shapes.Pair;
 import Shapes.Shapes;
 import Shapes.association;
 import Shapes.classification;
@@ -16,6 +17,7 @@ public class Canvas {
     public Vector<Component> shapes = new Vector<Component>();
     public JPanel panel = new JPanel();
     private Shapes PressedShape = null;
+    private Pair<Integer, Integer> PressedPos = null;
     public Canvas()
     {
         panel.setLayout(null);
@@ -79,6 +81,7 @@ public class Canvas {
                         if (s.second().contains(me.getPoint())) {//check if mouse is clicked within shape
                             System.out.println("Pressed on " + shape.getClass().getName());
                             PressedShape = (Shapes) shape;
+                            PressedPos = new Pair<>(me.getX(), me.getY());
                             return;
                         }
                     }
@@ -109,13 +112,13 @@ public class Canvas {
                             switch(Menu.currentSelected)
                             {
                                 case ASSOCIATION:
-                                    shapes.add(new association(PressedShape, (Shapes)shape));
+                                    shapes.add(new association(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
                                     break;
                                 case GENERALIZATION:
-                                    shapes.add(new generalization(PressedShape, (Shapes)shape));
+                                    shapes.add(new generalization(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
                                     break;
                                 case COMPOSITION:
-                                    shapes.add(new composition(PressedShape, (Shapes)shape));
+                                    shapes.add(new composition(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
                                     break;
                                 default:
                                     break;

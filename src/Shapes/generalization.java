@@ -1,15 +1,14 @@
 package Shapes;
 
-import java.awt.geom.*;
 import java.awt.*;
 
 public class generalization extends Lines
 {
-    public generalization(Shapes startShape, Shapes endShape) {
-        super(startShape, endShape);
-        repaint();
-        Line2D line = new Line2D.Double(startCoord.first(), startCoord.second(), endCoord.first(), endCoord.second());
-        shapes.add( new Pair<>(Color.green, line) );
+    public generalization(Shapes startShape, Pair<Integer, Integer> startPos, Shapes endShape, Pair<Integer, Integer> endPos)
+    {
+        super(startShape, startPos, endShape, endPos);
+        for(var line : this.lines)
+            shapes.add( new Pair<>(Color.green, line) );
     }
 
 

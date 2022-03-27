@@ -1,77 +1,64 @@
 package Shapes;
 
 import java.util.Vector;
+import java.awt.geom.*;
 
 public class Lines extends Component
 {
-    public Lines(Shapes startShape, Shapes endShape)
+    public Shapes startShape, endShape;
+    public Pair<Double, Double> startPos, endPos;
+    protected Vector<Line2D> lines = new Vector<Line2D>();
+
+    public Lines(Shapes startShape, Pair<Integer, Integer> startPos, Shapes endShape, Pair<Integer, Integer> endPos)
     {
         this.startShape = startShape;
         this.endShape = endShape;
         this.strokeWidth = 2;
+        this.startPos = getNearestPos(startShape, startPos);
+        this.endPos = getNearestPos(endShape, endPos);
+        lines.add(
+             new Line2D.Double(this.startPos.first(), this.startPos.second(), this.endPos.first(), this.endPos.second())
+        );
     }
 
-    public Shapes startShape, endShape;
-    public Pair<Double, Double> startCoord, endCoord;
     
-    private boolean between(Double first, Double first2, Double first3) {
-        return (first <= first2 && first2 <= first3) || (first >= first2 && first2 >= first3);
-    }
-    public Pair<Double, Double> getEndCoord()
-    {
-        Pair<Double, Double> curlinefunc = getLine(startShape, endShape);
-        return getCounter(endShape, startShape, curlinefunc);
-    }
-
-    private Pair<Double, Double> getCounter(Shapes shape, Shapes anotherShape, Pair<Double, Double> curlinefunc) {
-        Vector<Pair<Double, Double>> ret = new Vector<>();
-        var a = curlinefunc.first();
-        var b = curlinefunc.second();
-        if(shape instanceof classification)
-        {
-            ret.add(new Pair<Double, Double>(shape.x, (a*shape.x + b)));
-            ret.add(new Pair<Double, Double>(shape.x + shape.width, (a*(shape.x + shape.width) + b)));
-            ret.add(new Pair<Double, Double>(((shape.y-b)/a), shape.y));
-            ret.add(new Pair<Double, Double>((((shape.y + shape.height)-b)/a), shape.y + shape.height));
-        }
-        else if(shape instanceof use_case)
-        {
-            ret.add(shape.center());
-        }
+    private Pair<Double, Double> getNearestPos(Shapes curShape, Pair<Integer, Integer> curPos) {
+        Vector<Pair<Double, Double>> candidate = new Vector<Pair<Double, Double>>();
         
-        for(var i : ret)
+        candidate.add(new Pair<>(curShape.center().first() + curShape.width/2, curShape.center().second()));
+        candidate.add(new Pair<>(curShape.center().first() - curShape.width/2, curShape.center().second()));
+        candidate.add(new Pair<>(curShape.center().first(), curShape.center().second() + curShape.height/2));
+        candidate.add(new Pair<>(curShape.center().first(), curShape.center().second() - curShape.height/2));
+
+        Pair<Double, Double> ret = candidate.get(0);
+        double retDist = getDistance(candidate.get(0), curPos);
+        for(int i=1; i<candidate.size(); i++)
         {
-            if(Math.abs(i.first() - shape.center().first()) <= shape.width/2 && Math.abs(i.second() - shape.center().second()) <= shape.height/2 )
-            if(between(shape.center().first(), i.first(), anotherShape.center().first()) && between(shape.center().second(), i.second(), anotherShape.center().second()) )
+            var curDist = getDistance(candidate.get(i), curPos);
+            if(curDist < retDist)
             {
-                return i;
+                ret = candidate.get(i);
+                retDist = curDist;
             }
         }
-        return null;
-    }
-    private Pair<Double, Double> getLine(Shapes startShape, Shapes endShape) {
-        double a = (startShape.center().second() - endShape.center().second()) / (startShape.center().first() - endShape.center().first()) ;
-        double b = startShape.center().second() - a * startShape.center().first();
-        return new Pair<Double, Double>(a, b);
-    }
-    public Pair<Double, Double> getStartCoord()
-    {
-        Pair<Double, Double> curlinefunc = getLine(startShape, endShape);
-        return getCounter(startShape, endShape, curlinefunc);
+
+        return ret;
     }
 
-    public void repaint()
-    {
-        startCoord = getStartCoord();
-        endCoord = getEndCoord();
+
+    private double getDistance(Pair<Double, Double> pos1, Pair<Integer, Integer> pos2) {
+        double x = (pos1.first() - pos2.first());
+        double y = (pos1.second() - pos2.second());
+        return x*x+y*y;
     }
+
 
     @Override
     public int getX() {
-        return (int) Math.floor(startCoord.first());
+        return (int) Math.floor(startPos.first());
     }
     @Override
     public int getY() {
-        return (int) Math.floor(startCoord.second());
+        return (int) Math.floor(startPos.second());
     }
 }
