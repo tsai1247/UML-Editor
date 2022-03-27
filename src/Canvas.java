@@ -1,7 +1,6 @@
 import javax.swing.*;
 
 import Shapes.Component;
-import Shapes.Pair;
 import Shapes.Shapes;
 import Shapes.association;
 import Shapes.classification;
@@ -17,7 +16,7 @@ public class Canvas {
     public Vector<Component> shapes = new Vector<Component>();
     public JPanel panel = new JPanel();
     private Shapes PressedShape = null;
-    private Pair<Integer, Integer> PressedPos = null;
+    private Point PressedPos = null;
     public Canvas()
     {
         panel.setLayout(null);
@@ -32,17 +31,20 @@ public class Canvas {
                 Shapes shape = null;
                 switch(Menu.currentSelected)
                 {
+                    case SELECT:
+
+                        break;
                     case ASSOCIATION:
                     case COMPOSITION:
                     case GENERALIZATION:
                         break;
 
                     case CLASS:
-                        shape = new classification(e.getX(), e.getY());
+                        shape = new classification(e.getPoint());
                         break;
                     
                         case USECASE:
-                        shape = new use_case(e.getX(), e.getY());
+                        shape = new use_case(e.getPoint());
                         break;
 
                     default:
@@ -72,20 +74,8 @@ public class Canvas {
                     default:
                         break;
                 }
-
-                for (var shape : shapes)
-                {
-                    for (var s : shape.shapes)
-                    {
-                        
-                        if (s.second().contains(me.getPoint())) {//check if mouse is clicked within shape
-                            System.out.println("Pressed on " + shape.getClass().getName());
-                            PressedShape = (Shapes) shape;
-                            PressedPos = new Pair<>(me.getX(), me.getY());
-                            return;
-                        }
-                    }
-                }
+                PressedShape = getClickedShape(me.getPoint());
+                PressedPos = me.getPoint();
             }
 
             @Override
@@ -101,51 +91,69 @@ public class Canvas {
                         break;
                 }
 
-                for (var shape : shapes)
+                switch(Menu.currentSelected)
                 {
-                    if(shape == PressedShape)
-                        continue;
-                    for (var s : shape.shapes)
-                    {
-                        if (s.second().contains(me.getPoint())) {//check if mouse is clicked within shape
-                            System.out.println("Released on " + shape.getClass().getName());
-                            switch(Menu.currentSelected)
-                            {
-                                case ASSOCIATION:
-                                    shapes.add(new association(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
-                                    break;
-                                case GENERALIZATION:
-                                    shapes.add(new generalization(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
-                                    break;
-                                case COMPOSITION:
-                                    shapes.add(new composition(PressedShape, PressedPos, (Shapes)shape, new Pair<>(me.getX(), me.getY())));
-                                    break;
-                                default:
-                                    break;
-                            }
-                            
-                            PressedShape = null;
-                            Repaint();
-                            return;
-                        }
-                    }
+                    case ASSOCIATION:
+                        shapes.add(
+                            new association(
+                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
+                            )
+                        );
+                        break;
+                    case GENERALIZATION:
+                        shapes.add(
+                            new generalization(
+                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
+                            )
+                        );
+                        break;
+                    case COMPOSITION:
+                        shapes.add(
+                            new composition(
+                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
+                            )
+                        );
+                        break;
+                    default:
+                        break;
                 }
+                
                 PressedShape = null;
+                Repaint();
+                return;
             }
 
         });
     }
 
-    
+    protected Shapes getClickedShape(Point point)
+    {
+
+        for (var shape : shapes)
+        {
+            if(shape instanceof Shapes)
+            {
+                for(int i=0; i<shape.getShapes().size(); i++)
+                {
+                    if (shape.getShapes().get(i).contains(point))
+                    {
+                        return (Shapes) shape;
+                    }                    
+                }
+            }
+        }
+        return null;
+    }
     protected void Repaint() {
         Graphics2D g = (Graphics2D) panel.getGraphics();
-        for(var i : shapes)
+        for(var shape : shapes)
         {
-            g.setStroke(new BasicStroke((float)i.strokeWidth));
-            for(var j: i.shapes)
+            g.setStroke(new BasicStroke( shape.getStrokeWidth() ) );
+            for(int i=0; i<shape.getShapes().size(); i++)
             {
-                g.setColor(j.first());
-                g.draw(j.second());
+                g.setColor(shape.getColors().get(i));
+                g.draw(shape.getShapes().get(i));
+
             }
         }
     }

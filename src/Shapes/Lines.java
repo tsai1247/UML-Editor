@@ -2,14 +2,15 @@ package Shapes;
 
 import java.util.Vector;
 import java.awt.geom.*;
+import java.awt.*;
 
 public class Lines extends Component
 {
     public Shapes startShape, endShape;
-    public Pair<Double, Double> startPos, endPos;
+    public Point startPos, endPos;
     protected Vector<Line2D> lines = new Vector<Line2D>();
 
-    public Lines(Shapes startShape, Pair<Integer, Integer> startPos, Shapes endShape, Pair<Integer, Integer> endPos)
+    public Lines(Shapes startShape, Point startPos, Shapes endShape, Point endPos)
     {
         this.startShape = startShape;
         this.endShape = endShape;
@@ -17,21 +18,21 @@ public class Lines extends Component
         this.startPos = getNearestPos(startShape, startPos);
         this.endPos = getNearestPos(endShape, endPos);
         lines.add(
-             new Line2D.Double(this.startPos.first(), this.startPos.second(), this.endPos.first(), this.endPos.second())
+             new Line2D.Double(this.startPos.getX(), this.startPos.getY(), this.endPos.getX(), this.endPos.getY())
         );
     }
 
     
-    private Pair<Double, Double> getNearestPos(Shapes curShape, Pair<Integer, Integer> curPos) {
-        Vector<Pair<Double, Double>> candidate = new Vector<Pair<Double, Double>>();
-        
-        candidate.add(new Pair<>(curShape.center().first() + curShape.width/2, curShape.center().second()));
-        candidate.add(new Pair<>(curShape.center().first() - curShape.width/2, curShape.center().second()));
-        candidate.add(new Pair<>(curShape.center().first(), curShape.center().second() + curShape.height/2));
-        candidate.add(new Pair<>(curShape.center().first(), curShape.center().second() - curShape.height/2));
+    private Point getNearestPos(Shapes curShape, Point curPos) {
+        Vector<Point> candidate = new Vector<Point>();
 
-        Pair<Double, Double> ret = candidate.get(0);
-        double retDist = getDistance(candidate.get(0), curPos);
+        candidate.add(new Point((int) (curShape.center().getX()) + curShape.width/2,  (int) (curShape.center().getY())));
+        candidate.add(new Point((int) (curShape.center().getX()) - curShape.width/2,  (int) (curShape.center().getY())));
+        candidate.add(new Point((int) (curShape.center().getX()), (int) curShape.center().getY() + curShape.height/2));
+        candidate.add(new Point((int) (curShape.center().getX()), (int) curShape.center().getY() - curShape.height/2));
+
+        Point ret = candidate.get(0);
+        Double retDist = getDistance(candidate.get(0), curPos);
         for(int i=1; i<candidate.size(); i++)
         {
             var curDist = getDistance(candidate.get(i), curPos);
@@ -46,19 +47,19 @@ public class Lines extends Component
     }
 
 
-    private double getDistance(Pair<Double, Double> pos1, Pair<Integer, Integer> pos2) {
-        double x = (pos1.first() - pos2.first());
-        double y = (pos1.second() - pos2.second());
+    private Double getDistance(Point pos1, Point pos2) {
+        Double x = (pos1.getX() - pos2.getX());
+        Double y = (pos1.getY() - pos2.getY());
         return x*x+y*y;
     }
 
 
     @Override
-    public int getX() {
-        return (int) Math.floor(startPos.first());
+    public Double getX() {
+        return startPos.getX();
     }
     @Override
-    public int getY() {
-        return (int) Math.floor(startPos.second());
+    public Double getY() {
+        return startPos.getY();
     }
 }

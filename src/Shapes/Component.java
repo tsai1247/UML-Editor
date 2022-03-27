@@ -4,8 +4,31 @@ import java.awt.*;
 import java.util.*;
 
 public abstract class Component {
-    public Vector<Pair<Color, Shape>> shapes = new Vector<Pair<Color, Shape>>();
-    public double strokeWidth = 0;
-    public abstract int getX();
-    public abstract int getY();
+    protected Vector<Shape> shapes = new Vector<Shape>();
+    public Vector<Shape> getShapes()
+    {
+        return this.shapes;
+    }
+
+    protected Vector<Color> colors = new Vector<Color>();
+    public Vector<Color> getColors()
+    {
+        return this.colors;
+    }
+    
+    
+    protected float strokeWidth = 0;
+    public float getStrokeWidth()
+    {
+        return this.strokeWidth;
+    }
+
+    public abstract Double getX();
+    public abstract Double getY();
+    public void Add(Shape shape, Color color)
+    {
+        this.shapes.add(shape);
+        this.colors.add(color);
+    }
+
 }

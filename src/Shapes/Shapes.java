@@ -1,29 +1,36 @@
 package Shapes;
 
-
+import java.awt.*;
 
 public class Shapes extends Component
 {
-    public double x, y, width, height;
+    protected Point pos;
+    protected int width, height;
 
-    public Shapes(int x, int y)
+    public Shapes(Point pos)
     {
-        this.x = x;
-        this.y = y;
+        this.pos = pos;
         this.strokeWidth = 4;
     }
 
-    public int getX()
+    public Double getX()
     {
-        return (int) this.x;
+        return pos.getX();
     }
-    public int getY()
+    public Double getY()
     {
-        return (int) this.y;
+        return pos.getY();
     }
 
-    public Pair<Double, Double> center()
+    public Point getPoint()
     {
-        return new Pair<Double, Double>(this.x + this.width/2, this.y + this.height/2);
+        return pos;
+    }
+
+    public Point center()
+    {
+        int posX = (int) (pos.getX() + this.width/2);
+        int posY = (int) (pos.getY() + this.height/2);
+        return new Point(posX, posY);
     }
 }
