@@ -26,7 +26,6 @@ public abstract class Shapes
         return new Point((int)x, (int)y);
     }
 
-    // public abstract void setPoint(Point pos);
     public Double getX()
     {
         return pos.getX();

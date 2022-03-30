@@ -1,4 +1,10 @@
+import javax.sound.sampled.LineListener;
 import javax.swing.*;
+
+import Line.Line;
+import Line.association;
+import Line.composition;
+import Line.generalization;
 import Shapes.Shapes;
 import Shapes.classification;
 import Shapes.composite;
@@ -11,6 +17,7 @@ import java.util.Vector;
 
 public class Canvas {
     protected Vector<Shapes> shapesList = new Vector<Shapes>();
+    protected Vector<Line> linesList = new Vector<Line>();
     public JPanel panel = new JPanel();
     protected Shapes PressedShape = null;
     protected Point PressedPos = null;
@@ -86,6 +93,8 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent me) {
                 var releasedShape = getClickedShape(shapesList, me.getPoint());
+                if(releasedShape != null && PressedShape == releasedShape)
+                    return;
                 switch(SideBar.currentSelected)
                 {
                     case SELECT:
@@ -101,25 +110,25 @@ public class Canvas {
                     case ASSOCIATION:
                         if(PressedShape != null && releasedShape != null)
                         {
-                            // shapes.add(
-                            //     new association(PressedShape, PressedPos, curShape, me.getPoint())
-                            // );
+                            linesList.add(
+                                new association(PressedShape, PressedPos, releasedShape, me.getPoint())
+                            );
                         }
                         break;
                     case GENERALIZATION:
                     if(PressedShape != null && releasedShape != null)
                         {
-                            // shapes.add(
-                            //     new generalization(PressedShape, PressedPos, curShape, me.getPoint())
-                            // );
+                            linesList.add(
+                                new generalization(PressedShape, PressedPos, releasedShape, me.getPoint())
+                            );
                         }
                         break;
                     case COMPOSITION:
                     if(PressedShape != null && releasedShape != null)
                         {
-                            // shapes.add(
-                            //     new composition(PressedShape, PressedPos, curShape, me.getPoint())
-                            // );
+                            linesList.add(
+                                new composition(PressedShape, PressedPos, releasedShape, me.getPoint())
+                            );
                         }
                         break;
                     default:
@@ -227,16 +236,30 @@ public class Canvas {
     {
         Graphics2D g = (Graphics2D) panel.getGraphics();
         g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
-        Repaint(this.shapesList);
+        RepaintShapes(this.shapesList);
+
+        RepaintLines(this.linesList);
     }
 
-    protected void Repaint(Vector<Shapes> shapesList) {
+    private void RepaintLines(Vector<Line> linesList) {
+        Graphics2D g = (Graphics2D) panel.getGraphics();
+        g.setColor(Color.BLACK);
+        for(var lines : linesList)
+        {
+            g.setStroke(new BasicStroke( lines.getStrokeWidth() ) );
+            for(var line : lines.getLines())
+            {
+                g.draw(line);
+            }
+        }
+    }
+    protected void RepaintShapes(Vector<Shapes> shapesList) {
         Graphics2D g = (Graphics2D) panel.getGraphics();
         for(var shapes : shapesList)
         {
             if(shapes instanceof composite)
             {
-                Repaint(((composite)shapes).getsubShapes());
+                RepaintShapes(((composite)shapes).getsubShapes());
             }
 
             g.setStroke(new BasicStroke( shapes.getStrokeWidth() ) );
