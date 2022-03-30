@@ -1,35 +1,36 @@
 import javax.swing.*;
 
 public class Main {
+    
+    public static MenuBar menuBar = new MenuBar();
+    public static JFrame frame;
+    public static SideBar sideBar = new SideBar();
+    public static Canvas canva  = new Canvas();
+
     private static void createAndShowGUI() {
-//#region JFrame head
-        //Make sure we have nice window decorations.
+    //#region JFrame head
         JFrame.setDefaultLookAndFeelDecorated(true);
 
-        //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
+        frame = new JFrame("HelloWorldSwing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
-//#endregion
+    //#endregion
 
-        Menu menu = new Menu();
-        menu.setBounds(0, 0, 100, 600);
-        frame.getContentPane().add(menu);
+        frame.setJMenuBar(menuBar);
+
+        sideBar.setBounds(0, 0, 100, 600);
+        frame.getContentPane().add(sideBar);
         
-        Canvas canva  = new Canvas();
         frame.getContentPane().add(canva.panel);
 
-//#region JFrame tail
-        //Display the window.
+    //#region JFrame tail
         frame.pack();
         frame.setVisible(true);
         frame.setSize(600, 600);
-//#endregion
+    //#endregion
     }
 
     public static void main(String[] args) {
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

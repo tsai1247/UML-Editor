@@ -4,6 +4,7 @@ import Shapes.Component;
 import Shapes.Shapes;
 import Shapes.association;
 import Shapes.classification;
+import Shapes.composite;
 import Shapes.composition;
 import Shapes.generalization;
 import Shapes.use_case;
@@ -13,10 +14,11 @@ import java.awt.*;
 import java.util.Vector;
 
 public class Canvas {
-    public Vector<Component> shapes = new Vector<Component>();
+    protected Vector<Component> shapes = new Vector<Component>();
     public JPanel panel = new JPanel();
-    private Shapes PressedShape = null;
-    private Point PressedPos = null;
+    protected Shapes PressedShape = null;
+    protected Point PressedPos = null;
+
     public Canvas()
     {
         panel.setLayout(null);
@@ -29,14 +31,24 @@ public class Canvas {
                 System.out.println("Click canvas at (" + e.getX() + ", " + e.getY() + ")");
                 
                 Shapes shape = null;
-                switch(Menu.currentSelected)
+                switch(SideBar.currentSelected)
                 {
                     case SELECT:
                         ClearAllSelected();
-                        var curShape = getClickedShape(e.getPoint());
-                        if(curShape != null)
+                        PressedShape = getClickedShape(e.getPoint());
+                        if(PressedShape != null)
                         {
-                            curShape.setSelected(true);
+                            PressedShape.setSelected(true);
+                        }
+                        if(PressedShape instanceof composite)
+                        {
+                            Main.menuBar.group.setEnabled(false);
+                            Main.menuBar.ungroup.setEnabled(true);
+                        }
+                        else
+                        {
+                            Main.menuBar.group.setEnabled(false);
+                            Main.menuBar.ungroup.setEnabled(false);
                         }
                         break;
                     case ASSOCIATION:
@@ -69,7 +81,7 @@ public class Canvas {
                 super.mousePressed(me);
                 if(PressedShape != null)
                     return;
-                switch(Menu.currentSelected)
+                switch(SideBar.currentSelected)
                 {
                     case SELECT:
                         PressedPos = getClickedShape(me.getPoint()) == null ? me.getPoint() : null;
@@ -86,32 +98,36 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent me) {
                 super.mouseReleased(me);
-                switch(Menu.currentSelected)
+                var curShape = getClickedShape(me.getPoint());
+                switch(SideBar.currentSelected)
                 {
                     case SELECT:
                         if(PressedPos != null && getDistance(PressedPos, me.getPoint()) > 10)
                             SelectAllInRegion(PressedPos, me.getPoint());
                         break;
                     case ASSOCIATION:
-                        shapes.add(
-                            new association(
-                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
-                            )
-                        );
+                        if(PressedShape != null && curShape != null)
+                        {
+                            shapes.add(
+                                new association(PressedShape, PressedPos, curShape, me.getPoint())
+                            );
+                        }
                         break;
                     case GENERALIZATION:
-                        shapes.add(
-                            new generalization(
-                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
-                            )
-                        );
+                    if(PressedShape != null && curShape != null)
+                        {
+                            shapes.add(
+                                new generalization(PressedShape, PressedPos, curShape, me.getPoint())
+                            );
+                        }
                         break;
                     case COMPOSITION:
-                        shapes.add(
-                            new composition(
-                                PressedShape, PressedPos, getClickedShape(me.getPoint()), me.getPoint()
-                            )
-                        );
+                    if(PressedShape != null && curShape != null)
+                        {
+                            shapes.add(
+                                new composition(PressedShape, PressedPos, curShape, me.getPoint())
+                            );
+                        }
                         break;
                     default:
                         break;
@@ -135,7 +151,8 @@ public class Canvas {
 
             private void SelectAllInRegion(Point startPos, Point endPos) {
                 NormalizeRectPos(startPos, endPos);
-
+                int cnt = 0;
+                Shapes curShape = null;
                 for(var i : shapes)
                 {
                     var rectStartPos = i.getPoint();
@@ -150,7 +167,27 @@ public class Canvas {
                     {
                         System.out.println("Selected: " + condition);
                         ((Shapes)i).setSelected(condition);
+                        if(condition)
+                        {
+                            curShape = (Shapes) i;
+                            cnt++;
+                        }
                     }
+                }
+                if(cnt > 1)
+                {
+                    Main.menuBar.group.setEnabled(true);
+                    Main.menuBar.ungroup.setEnabled(false);
+                }
+                else if(cnt == 1 && curShape instanceof composite)
+                {
+                    Main.menuBar.group.setEnabled(false);
+                    Main.menuBar.ungroup.setEnabled(true);
+                }
+                else
+                {
+                    Main.menuBar.group.setEnabled(false);
+                    Main.menuBar.ungroup.setEnabled(false);
                 }
             }
 
@@ -170,20 +207,19 @@ public class Canvas {
                 
             }
 
-            private void ClearAllSelected() {
-                for(var i : shapes)
-                {
-                    if(i instanceof Shapes)
-                        ((Shapes)i).setSelected(false);
-                }
-            }
-
-
         });
             
+
     }
 
-    
+    public void ClearAllSelected() {
+        for(var i : shapes)
+        {
+            if(i instanceof Shapes)
+                ((Shapes)i).setSelected(false);
+        }
+    }
+
     protected Shapes getClickedShape(Point point)
     {
 

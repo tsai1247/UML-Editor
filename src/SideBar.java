@@ -3,7 +3,7 @@ import java.awt.event.*;
 
 
 
-public class Menu extends JPanel{
+public class SideBar extends JPanel{
     public enum Selected {SELECT, ASSOCIATION, GENERALIZATION, COMPOSITION, CLASS, USECASE}
     public static Selected currentSelected = Selected.ASSOCIATION;
     final int function_size = 6;
@@ -12,7 +12,7 @@ public class Menu extends JPanel{
     String[] option_names = {"select", "association line", "generalization line", "composition line", "class", "use case"};
     
     
-    public Menu()
+    public SideBar()
     {
     	this.setLayout(null);
         this.setBounds(0, 0, 100, 600);
@@ -34,6 +34,13 @@ public class Menu extends JPanel{
                     {
                         if(options[i].isSelected())
                         {
+                            if(currentSelected != Selected.values()[i])
+                            {
+                                Main.menuBar.group.setEnabled(false);
+                                Main.menuBar.ungroup.setEnabled(true);
+                                Main.canva.ClearAllSelected();
+                                Main.canva.Repaint();
+                            }
                             currentSelected = Selected.values()[i];
                             break;
                         }

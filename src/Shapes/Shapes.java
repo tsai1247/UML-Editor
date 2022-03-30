@@ -7,7 +7,7 @@ public class Shapes extends Component
 {
     protected Point pos;
     protected int width, height;
-    protected boolean isSelected = false;
+    protected boolean _isSelected = false;
     protected int selectedMarkSize = 10;
 
     public Shapes(Point pos, int width, int height)
@@ -19,12 +19,16 @@ public class Shapes extends Component
 
     }
 
+    public boolean isSelected()
+    {
+        return _isSelected;
+    }
     public void setSelected(boolean isSelected)
     {
-        if(this.isSelected == isSelected)   return;
-        this.isSelected = isSelected;
+        if(this._isSelected == isSelected)   return;
+        this._isSelected = isSelected;
 
-        if(this.isSelected)
+        if(this._isSelected)
         {
             this.Add(getRectangle(this.getX() + this.width/2, this.getY(), selectedMarkSize), Color.PINK);
             this.Add(getRectangle(this.getX() + this.width/2, this.getY() + this.height, selectedMarkSize), Color.PINK);
