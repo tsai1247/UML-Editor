@@ -10,7 +10,21 @@ public class classification extends Shapes{
         super(pos, 80, 120);
         for(int i=0; i<size; i++)
         {
-            var rect = new Rectangle2D.Double(pos.getX(), pos.getY()+height/size*i, width, height/size);
+            var rect = new Rectangle2D.Double(this.getX(), this.getY()+this.height/this.size*i, 
+                this.width, this.height/this.size);
+            this.Add(rect, Color.BLACK);
+        }
+    }
+
+    @Override
+    public void setPoint(Point pos) {
+        super.setPoint(pos);
+        this.shapes.clear();
+        this.colors.clear();
+        for(int i=0; i<size; i++)
+        {
+            var rect = new Rectangle2D.Double(this.getX(), this.getY()+this.height/this.size*i,
+                this.width, this.height/this.size);
             this.Add(rect, Color.BLACK);
         }
     }

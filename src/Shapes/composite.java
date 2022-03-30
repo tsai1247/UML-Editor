@@ -60,4 +60,25 @@ public class composite extends Shapes {
     private static int getTotalHeight(Vector<Shapes> subShapes) {
         return (int) (getRightBottomPos(subShapes).getY() - getLeftTopPos(subShapes).getY());
     }
+
+    @Override
+    public void setPoint(Point pos) {
+        var difference = new Point((int)(pos.getX() - this.getX()), (int)(pos.getY() - this.getY()));
+        for(var shape: subShapes)
+        {
+            var curPosOfShape = new Point((int)(shape.getX() + difference.getX()), (int)(shape.getY() + difference.getY()));
+            shape.setPoint(curPosOfShape);
+        }
+        this.getShapes().clear();
+        this.getColors().clear();
+        
+        for(var shape : subShapes)
+        {
+            for(int i=0; i<shape.getShapes().size(); i++)
+            {
+                this.Add(shape.getShapes().get(i), shape.getColors().get(i));
+            }
+        }
+        super.setPoint(pos);
+    }
 }

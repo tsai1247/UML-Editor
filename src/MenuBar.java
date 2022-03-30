@@ -47,11 +47,10 @@ public class MenuBar extends JMenuBar {
         ungroup.addActionListener(new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 composite curComposite = (composite) Main.canva.PressedShape;
-                curComposite.setSelected(false);
                 for(var shape : curComposite.getsubShapes())
                 {
                     Main.canva.shapes.add(shape);
-                    ((Shapes)(Main.canva.shapes.lastElement())).setSelected(true);
+                    ((Shapes)Main.canva.shapes.lastElement()).setSelected(true);
                 }
                 Main.canva.shapes.remove(curComposite);
                 Main.canva.Repaint();

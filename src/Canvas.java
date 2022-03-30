@@ -19,6 +19,21 @@ public class Canvas {
     protected Shapes PressedShape = null;
     protected Point PressedPos = null;
 
+    public void Display()
+    {
+        System.out.println("\n----\n");
+        for(var i : shapes)
+        {
+            if(i instanceof Shapes)
+            {
+                if(((Shapes)i).isSelected())
+                {
+                    System.out.println(i.getClass().getName() + ": (" + i.getX() + ", " + i.getY() + ")");
+                }
+            }
+        }
+        System.out.println("\n----\n");
+    }
     public Canvas()
     {
         panel.setLayout(null);
@@ -35,15 +50,16 @@ public class Canvas {
                 {
                     case SELECT:
                         ClearAllSelected();
-                        PressedShape = getClickedShape(e.getPoint());
-                        if(PressedShape != null)
+                        var curShape = getClickedShape(e.getPoint());
+                        if(curShape != null)
                         {
-                            PressedShape.setSelected(true);
+                            curShape.setSelected(true);
                         }
-                        if(PressedShape instanceof composite)
+                        if(curShape instanceof composite)
                         {
                             Main.menuBar.group.setEnabled(false);
                             Main.menuBar.ungroup.setEnabled(true);
+                            PressedShape = curShape;
                         }
                         else
                         {
@@ -74,17 +90,16 @@ public class Canvas {
                 }
                 Repaint();
                 super.mouseClicked(e);
+                Display();
             }
+
 
             @Override
             public void mousePressed(MouseEvent me) {
-                super.mousePressed(me);
                 if(PressedShape != null)
                     return;
                 switch(SideBar.currentSelected)
                 {
-                    case SELECT:
-                        PressedPos = getClickedShape(me.getPoint()) == null ? me.getPoint() : null;
                     case USECASE:
                     case CLASS:
                         return;
@@ -93,6 +108,9 @@ public class Canvas {
                 }
                 PressedShape = getClickedShape(me.getPoint());
                 PressedPos = me.getPoint();
+                
+                super.mousePressed(me);
+                Display();
             }
 
             @Override
@@ -103,7 +121,17 @@ public class Canvas {
                 {
                     case SELECT:
                         if(PressedPos != null && getDistance(PressedPos, me.getPoint()) > 10)
-                            SelectAllInRegion(PressedPos, me.getPoint());
+                        {
+                            if(PressedShape == null)
+                            {
+                                SelectAllInRegion(PressedPos, me.getPoint());
+                            }
+                            else
+                            {
+                                PressedShape.setPoint(me.getPoint());
+                                Repaint();
+                            }
+                        }
                         break;
                     case ASSOCIATION:
                         if(PressedShape != null && curShape != null)
@@ -135,7 +163,7 @@ public class Canvas {
                 
                 PressedShape = null;
                 Repaint();
-                return;
+                Display();
             }
 
             private double getDistance(Point startPos, Point endPos) {

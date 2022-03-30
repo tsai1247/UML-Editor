@@ -37,9 +37,19 @@ public class Shapes extends Component
         }
         else
         {
-            for(int i=0; i<4; i++)
+            while(this.shapes.size() > 0)
             {
-                this.shapes.remove(this.shapes.size()-1);
+                if(this.shapes.lastElement() instanceof Rectangle2D)
+                {
+                    var curWidth = ((Rectangle2D)this.shapes.lastElement()).getWidth();
+                    var curHeight = ((Rectangle2D)this.shapes.lastElement()).getHeight();
+                    if(curWidth == curHeight)
+                        this.shapes.remove(this.shapes.size()-1);
+                    else
+                        break;
+                }
+                else
+                    break;
             }
         }
     }
@@ -83,6 +93,10 @@ public class Shapes extends Component
         int posX = (int) (pos.getX() + this.width/2);
         int posY = (int) (pos.getY() + this.height/2);
         return new Point(posX, posY);
+    }
+
+    public void setPoint(Point pos) {
+        this.pos = pos;
     }
 
 }
