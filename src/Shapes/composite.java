@@ -9,6 +9,7 @@ public class composite extends Shapes {
     {
         super(getLeftTopPos(shapesList), getTotalWidth(shapesList), getTotalHeight(shapesList));
         this.shapesList = shapesList;
+        this.setName(null);
     }
 
     protected Vector<Shapes> shapesList;

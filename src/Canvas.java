@@ -289,6 +289,7 @@ public class Canvas {
 
     protected void Repaint()
     {
+        panel.removeAll();
         Graphics2D g = (Graphics2D) panel.getGraphics();
         g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
         RepaintShapes(this.shapesList);
@@ -321,17 +322,25 @@ public class Canvas {
             {
                 RepaintShapes(((composite)shapes).getsubShapes());
             }
-
-            g.setStroke(new BasicStroke( shapes.getStrokeWidth() ) );
-            for(int i=0; i<shapes.getShapes().size(); i++)
+            else
             {
-                g.setColor(shapes.getColors().get(i));
-                g.draw(shapes.getShapes().get(i));
+                g.setStroke(new BasicStroke( shapes.getStrokeWidth() ) );
+                for(int i=0; i<shapes.getShapes().size(); i++)
+                {
+                    g.setColor(shapes.getColors().get(i));
+                    g.draw(shapes.getShapes().get(i));
+                }
+                if(shapes.getName() != null)
+                {
+                    shapes.setNameBound();
+                    panel.add(shapes.getLabel());
+                }
             }
             if(shapes.isSelected())
             {
                 PaintSelectSquare(shapes);
             }
+
         }
     }
 

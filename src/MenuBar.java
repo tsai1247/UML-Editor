@@ -1,9 +1,12 @@
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.border.Border;
 
 import Shapes.Shapes;
 import Shapes.composite;
@@ -42,16 +45,16 @@ public class MenuBar extends JMenuBar {
                 Vector<Shapes> shapes = new Vector<Shapes>();
                 for(int i=0; i<Main.canva.shapesList.size(); i++)
                 {
-                    if(((Shapes)Main.canva.shapesList.get(i)).isSelected())
+                    if(Main.canva.shapesList.get(i).isSelected())
                     {
-                        shapes.add(((Shapes)Main.canva.shapesList.get(i)));
+                        shapes.add(Main.canva.shapesList.get(i));
                         shapes.lastElement().setSelected(false);;
                         Main.canva.shapesList.remove(i);
                         i--;
                     }
                 }
                 Main.canva.shapesList.add(new composite(shapes));
-                ((Shapes)(Main.canva.shapesList.lastElement())).setSelected(true);
+                Main.canva.shapesList.lastElement().setSelected(true);
                 Main.canva.Repaint();
                 group.setEnabled(false);
                 ungroup.setEnabled(true);
@@ -65,7 +68,7 @@ public class MenuBar extends JMenuBar {
                 for(var shape : curComposite.getsubShapes())
                 {
                     Main.canva.shapesList.add(shape);
-                    ((Shapes)Main.canva.shapesList.lastElement()).setSelected(true);
+                    Main.canva.shapesList.lastElement().setSelected(true);
                 }
                 Main.canva.shapesList.remove(curComposite);
                 Main.canva.Repaint();
@@ -76,7 +79,47 @@ public class MenuBar extends JMenuBar {
         
         cname.addActionListener(new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                
+                for(int i=0; i<Main.canva.shapesList.size(); i++)
+                {
+                    var curShape = Main.canva.shapesList.get(i);
+                    if(curShape instanceof composite)
+                        continue;
+                    if(curShape.isSelected())
+                    {
+                        JFrame f = new JFrame();
+                        JDialog msgbox = new JDialog(f);
+                        msgbox.setTitle("Change " + curShape.getName() + " name");
+                        msgbox.setLayout(new BorderLayout());
+                        JTextArea area = new JTextArea(curShape.getName());
+                        JButton btn_OK = new JButton("OK"); 
+                        JButton btn_Cancel = new JButton("Cancel");
+
+                        btn_OK.setPreferredSize(new Dimension(80, 80));
+                        btn_Cancel.setPreferredSize(new Dimension(80, 80));
+                        btn_OK.addActionListener(new ActionListener(){
+                            @Override
+                            public void actionPerformed(ActionEvent arg0) {
+                                curShape.setName(area.getText());
+                                msgbox.setVisible(false);
+                            }
+                            
+                        });
+                        btn_Cancel.addActionListener(new ActionListener(){
+                            @Override
+                            public void actionPerformed(ActionEvent arg0) {
+                                msgbox.setVisible(false);
+                            }
+                            
+                        });
+
+                        msgbox.add(area, BorderLayout.NORTH);
+                        msgbox.add(btn_OK, BorderLayout.WEST);
+                        msgbox.add(btn_Cancel, BorderLayout.EAST);
+                        msgbox.setSize(260, 150);
+                        msgbox.setVisible(true);
+                        break;
+                    }
+                }
             }
         });
         

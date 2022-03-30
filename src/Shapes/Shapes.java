@@ -3,6 +3,8 @@ package Shapes;
 import java.awt.*;
 import java.util.*;
 
+import javax.swing.JLabel;
+
 public abstract class Shapes
 {
     // Constructor
@@ -12,7 +14,8 @@ public abstract class Shapes
         this.width = width;
         this.height = height;
         this.strokeWidth = 4;
-
+        this.name.setVerticalAlignment(JLabel.CENTER);
+        this.name.setHorizontalAlignment(JLabel.CENTER);
     }
 
     protected Point pos;
@@ -26,11 +29,11 @@ public abstract class Shapes
         return new Point((int)x, (int)y);
     }
 
-    public Double getX()
+    public double getX()
     {
         return pos.getX();
     }
-    public Double getY()
+    public double getY()
     {
         return pos.getY();
     }
@@ -109,10 +112,30 @@ public abstract class Shapes
         return new Point((int)x, (int)y);
     }
 
+    private JLabel name = new JLabel();
+    public JLabel getLabel() {
+        return this.name;
+    }
+    public void setName(String name)
+    {
+        this.name.setText(name);
+    }
+    public String getName()
+    {
+        return this.name.getText();
+    }
+    
+    private Point namePos;
+    public void setNamePos(Point pos)
+    {
+        this.namePos = pos;   
+    }
+
+    public void setNameBound() {
+        name.setBounds((int)(this.getX()), (int)(this.getY()), this.getWidth(), this.getHeight());
+    }
 
     
-    
-
 
     
 
