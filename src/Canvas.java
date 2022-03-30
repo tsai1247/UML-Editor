@@ -2,11 +2,8 @@ import javax.swing.*;
 
 import Shapes.Component;
 import Shapes.Shapes;
-import Shapes.association;
 import Shapes.classification;
 import Shapes.composite;
-import Shapes.composition;
-import Shapes.generalization;
 import Shapes.use_case;
 
 import java.awt.event.*;
@@ -136,25 +133,25 @@ public class Canvas {
                     case ASSOCIATION:
                         if(PressedShape != null && curShape != null)
                         {
-                            shapes.add(
-                                new association(PressedShape, PressedPos, curShape, me.getPoint())
-                            );
+                            // shapes.add(
+                            //     new association(PressedShape, PressedPos, curShape, me.getPoint())
+                            // );
                         }
                         break;
                     case GENERALIZATION:
                     if(PressedShape != null && curShape != null)
                         {
-                            shapes.add(
-                                new generalization(PressedShape, PressedPos, curShape, me.getPoint())
-                            );
+                            // shapes.add(
+                            //     new generalization(PressedShape, PressedPos, curShape, me.getPoint())
+                            // );
                         }
                         break;
                     case COMPOSITION:
                     if(PressedShape != null && curShape != null)
                         {
-                            shapes.add(
-                                new composition(PressedShape, PressedPos, curShape, me.getPoint())
-                            );
+                            // shapes.add(
+                            //     new composition(PressedShape, PressedPos, curShape, me.getPoint())
+                            // );
                         }
                         break;
                     default:
