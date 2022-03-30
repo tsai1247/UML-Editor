@@ -14,8 +14,6 @@ public abstract class Shapes
         this.width = width;
         this.height = height;
         this.strokeWidth = 4;
-        this.name.setVerticalAlignment(JLabel.CENTER);
-        this.name.setHorizontalAlignment(JLabel.CENTER);
     }
 
     protected Point pos;
@@ -112,28 +110,13 @@ public abstract class Shapes
         return new Point((int)x, (int)y);
     }
 
-    private JLabel name = new JLabel();
-    public JLabel getLabel() {
-        return this.name;
-    }
+    private String name = new String();
     public void setName(String name)
     {
-        this.name.setText(name);
+        this.name = name;
     }
     public String getName()
     {
-        return this.name.getText();
+        return this.name;
     }
-    
-
-    public void setNameBound() {
-        name.setBounds((int)(this.getX()), (int)(this.getY()), this.getWidth(), this.getHeight());
-    }
-
-    
-
-    
-
-
-
 }

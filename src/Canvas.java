@@ -49,6 +49,11 @@ public class Canvas {
                         if(curShape != null)
                         {
                             curShape.setSelected(true);
+                            Main.menuBar.cname.setEnabled(true);
+                        }
+                        else
+                        {
+                            Main.menuBar.cname.setEnabled(false);
                         }
 
                         if(curShape instanceof composite)
@@ -197,6 +202,15 @@ public class Canvas {
                         i.setSelected(false);
 
                 }
+                if(cnt == 1)
+                {
+                    Main.menuBar.cname.setEnabled(true);
+                }
+                else
+                {
+                    Main.menuBar.cname.setEnabled(false);
+                }
+
                 if(cnt > 1)
                 {
                     Main.menuBar.group.setEnabled(true);
@@ -315,6 +329,7 @@ public class Canvas {
     }
     protected void RepaintShapes(Vector<Shapes> shapesList) {
         Graphics2D g = (Graphics2D) panel.getGraphics();
+        g.setBackground(Color.gray);
         for(var shapes : shapesList)
         {
             if(shapes instanceof composite)
@@ -331,8 +346,13 @@ public class Canvas {
                 }
                 if(shapes.getName() != null)
                 {
-                    shapes.setNameBound();
-                    panel.add(shapes.getLabel());
+                    g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+                    FontMetrics fontMetrics = g.getFontMetrics();
+                    var marginX = shapes.getWidth() - fontMetrics.stringWidth(shapes.getName());
+                    var x = shapes.getX() + marginX / 2;
+                    
+                    var y = shapes.center().getY();
+                    g.drawString(shapes.getName(), (int)x, (int)y);
                 }
             }
             if(shapes.isSelected())

@@ -35,6 +35,7 @@ public class MenuBar extends JMenuBar {
         edit.add(ungroup);
         ungroup.setEnabled(false);
         edit.add(cname);
+        cname.setEnabled(false);
 
         this.add(help);
         help.add(about);
@@ -57,7 +58,6 @@ public class MenuBar extends JMenuBar {
                 Main.canva.Repaint();
                 group.setEnabled(false);
                 ungroup.setEnabled(true);
-                Main.canva.Display();
             }
         });
 
@@ -119,6 +119,8 @@ public class MenuBar extends JMenuBar {
                         break;
                     }
                 }
+                Main.frame.requestFocus();
+                repaint();
             }
         });
         
