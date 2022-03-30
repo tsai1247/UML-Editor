@@ -11,7 +11,7 @@ public class Main {
     //#region JFrame head
         JFrame.setDefaultLookAndFeelDecorated(true);
 
-        frame = new JFrame("HelloWorldSwing");
+        frame = new JFrame("UML Editor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
     //#endregion
