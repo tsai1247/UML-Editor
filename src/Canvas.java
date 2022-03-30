@@ -17,6 +17,7 @@ import java.util.Vector;
 
 public class Canvas {
     protected Vector<Shapes> shapesList = new Vector<Shapes>();
+    protected Point mouseNearPoint = null;
     protected Vector<Line> linesList = new Vector<Line>();
     public JPanel panel = new JPanel();
     protected Shapes PressedShape = null;
@@ -82,6 +83,35 @@ public class Canvas {
             }
 
             @Override
+            public void mouseMoved(MouseEvent me) {
+                var movingShapes = getClickedShape(shapesList, me.getPoint());
+                var index = getLocate(movingShapes, me.getPoint());
+                mouseNearPoint = movingShapes == null ? me.getPoint() : movingShapes.getPoint(index);
+                Repaint();
+            }
+
+            private int getLocate(Shapes curShapes, Point curPos) {
+                int ret = -1;
+                double squareDistance = Double.MAX_VALUE;
+                for(int i=1; i<8; i+=2)
+                {
+                    var curDistance = this.squareDistance(curShapes.getPoint(i), curPos);
+                    if(squareDistance > curDistance)
+                    {
+                        ret = i;
+                        squareDistance = curDistance;
+                    }
+                }
+                return ret;
+            }
+        
+            private double squareDistance(Point pos1, Point pos2) {
+                var x = pos1.getX() - pos2.getX();
+                var y = pos1.getY() - pos2.getY();
+                return x*x + y*y;
+            }
+
+            @Override
             public void mousePressed(MouseEvent me) {
                 if(SideBar.currentSelected != SideBar.Selected.USECASE && SideBar.currentSelected != SideBar.Selected.CLASS)
                 {
@@ -92,12 +122,11 @@ public class Canvas {
 
             @Override
             public void mouseReleased(MouseEvent me) {
-                var releasedShape = getClickedShape(shapesList, me.getPoint());
-                if(releasedShape != null && PressedShape == releasedShape)
-                    return;
+                Shapes ReleasedShape;
                 switch(SideBar.currentSelected)
                 {
                     case SELECT:
+                        ReleasedShape = getClickedShape(shapesList, me.getPoint());
                         if(PressedShape == null)        // select a region
                         {
                             SelectAllInRegion(PressedPos, me.getPoint());
@@ -108,26 +137,32 @@ public class Canvas {
                         }
                         break;
                     case ASSOCIATION:
-                        if(PressedShape != null && releasedShape != null)
+                        PressedShape = getOriginShape(PressedPos);
+                        ReleasedShape = getOriginShape(me.getPoint());
+                        if(PressedShape != null && ReleasedShape != null && PressedShape != ReleasedShape)
                         {
                             linesList.add(
-                                new association(PressedShape, PressedPos, releasedShape, me.getPoint())
+                                new association(PressedShape, PressedPos, ReleasedShape, me.getPoint())
                             );
                         }
                         break;
                     case GENERALIZATION:
-                    if(PressedShape != null && releasedShape != null)
+                        PressedShape = getOriginShape(PressedPos);
+                        ReleasedShape = getOriginShape(me.getPoint());
+                        if(PressedShape != null && ReleasedShape != null && PressedShape != ReleasedShape)
                         {
                             linesList.add(
-                                new generalization(PressedShape, PressedPos, releasedShape, me.getPoint())
+                                new generalization(PressedShape, PressedPos, ReleasedShape, me.getPoint())
                             );
                         }
                         break;
                     case COMPOSITION:
-                    if(PressedShape != null && releasedShape != null)
+                        PressedShape = getOriginShape(PressedPos);
+                        ReleasedShape = getOriginShape(me.getPoint());
+                        if(PressedShape != null && ReleasedShape != null && PressedShape != ReleasedShape)
                         {
                             linesList.add(
-                                new composition(PressedShape, PressedPos, releasedShape, me.getPoint())
+                                new composition(PressedShape, PressedPos, ReleasedShape, me.getPoint())
                             );
                         }
                         break;
@@ -208,6 +243,26 @@ public class Canvas {
 
     }
 
+    private Shapes getOriginShape(Point curPos) {
+        return getOriginShape(curPos, this.shapesList);
+    }
+    private Shapes getOriginShape(Point curPos, Vector<Shapes> shapesList) {
+        for(int i=shapesList.size()-1; i >=0; i--)
+        {
+            var curShape = shapesList.get(i);
+            if(curShape instanceof composite)
+            {
+                var ret = getOriginShape(curPos, ((composite)(curShape)).getsubShapes());
+                if(ret != null)
+                    return ret;
+            }
+            else if(pointInRegion(curShape.getPoint(0), curShape.getPoint(8), curPos))
+                return curShape;
+        }
+        return null;
+    }
+
+
     public void ClearAllSelected() {
         for(var i : shapesList)
         {
@@ -237,8 +292,13 @@ public class Canvas {
         Graphics2D g = (Graphics2D) panel.getGraphics();
         g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
         RepaintShapes(this.shapesList);
-
         RepaintLines(this.linesList);
+        
+        if(mouseNearPoint != null)
+        {
+            var selectSquare = getSelectSquare(mouseNearPoint.getX(), mouseNearPoint.getY());
+            g.draw(selectSquare);
+        }
     }
 
     private void RepaintLines(Vector<Line> linesList) {
