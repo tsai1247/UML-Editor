@@ -14,11 +14,10 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.util.Vector;
 
-public class Canvas {
+public class Canvas extends JPanel{
     protected Vector<Shapes> shapesList = new Vector<Shapes>();
     protected Point mouseNearPoint = null;
     protected Vector<Line> linesList = new Vector<Line>();
-    public JPanel panel = new JPanel();
     protected Shapes PressedShape = null;
     protected Point PressedPos = null;
 
@@ -34,11 +33,11 @@ public class Canvas {
     }
     public Canvas()
     {
-        panel.setLayout(null);
-        panel.setBounds(100, 0, 500, 600);
-        panel.setBackground(Color.white);
+        this.setLayout(null);
+        this.setBounds(100, 0, 500, 600);
+        this.setBackground(Color.white);
 
-        panel.addMouseListener(new MouseAdapter() {
+        this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 switch(SideBar.currentSelected)
@@ -83,7 +82,7 @@ public class Canvas {
                     default:
                         break;
                 }
-                Repaint();
+                repaint();
             }
 
             @Override
@@ -91,7 +90,7 @@ public class Canvas {
                 var movingShapes = getClickedShape(shapesList, me.getPoint());
                 var index = getLocate(movingShapes, me.getPoint());
                 mouseNearPoint = movingShapes == null ? me.getPoint() : movingShapes.getPoint(index);
-                Repaint();
+                repaint();
             }
 
             private int getLocate(Shapes curShapes, Point curPos) {
@@ -175,7 +174,7 @@ public class Canvas {
                 }
                 
                 PressedShape = null;
-                Repaint();
+                repaint();
             }
 
             private double getDistance(Point startPos, Point endPos) {
@@ -299,24 +298,24 @@ public class Canvas {
         }
         return null;
     }
-
-    protected void Repaint()
-    {
-        panel.removeAll();
-        Graphics2D g = (Graphics2D) panel.getGraphics();
-        g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
-        RepaintShapes(this.shapesList);
-        RepaintLines(this.linesList);
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g.clearRect(0, 0, this.getWidth(), this.getHeight());
+        RepaintShapes(g2, this.shapesList);
+        RepaintLines(g2, this.linesList);
         
         if(mouseNearPoint != null)
         {
             var selectSquare = getSelectSquare(mouseNearPoint.getX(), mouseNearPoint.getY());
-            g.draw(selectSquare);
+            g2.draw(selectSquare);
         }
+
     }
 
-    private void RepaintLines(Vector<Line> linesList) {
-        Graphics2D g = (Graphics2D) panel.getGraphics();
+    private void RepaintLines(Graphics2D g, Vector<Line> linesList) {
         g.setColor(Color.BLACK);
         for(var lines : linesList)
         {
@@ -327,14 +326,13 @@ public class Canvas {
             }
         }
     }
-    protected void RepaintShapes(Vector<Shapes> shapesList) {
-        Graphics2D g = (Graphics2D) panel.getGraphics();
+    protected void RepaintShapes(Graphics2D g, Vector<Shapes> shapesList) {
         g.setBackground(Color.gray);
         for(var shapes : shapesList)
         {
             if(shapes instanceof composite)
             {
-                RepaintShapes(((composite)shapes).getsubShapes());
+                RepaintShapes(g,((composite)shapes).getsubShapes());
             }
             else
             {
@@ -357,7 +355,7 @@ public class Canvas {
             }
             if(shapes.isSelected())
             {
-                PaintSelectSquare(shapes);
+                PaintSelectSquare(g, shapes);
             }
 
         }
@@ -372,8 +370,7 @@ public class Canvas {
         return new Rectangle2D.Double(x, y, selectedMarkSize, selectedMarkSize);
     }
     
-    private void PaintSelectSquare(Shapes shapes) {
-        Graphics2D g = (Graphics2D) panel.getGraphics();
+    private void PaintSelectSquare(Graphics2D g, Shapes shapes) {
         g.setStroke(new BasicStroke( 5 ) );
         g.setColor(Color.PINK);
         for(int i=1; i<8; i+=2)

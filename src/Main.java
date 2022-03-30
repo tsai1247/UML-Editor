@@ -23,7 +23,7 @@ public class Main {
         sideBar.setBounds(0, 0, 100, 600);
         frame.getContentPane().add(sideBar);
         
-        frame.getContentPane().add(canva.panel);
+        frame.getContentPane().add(canva);
 
     //#region JFrame tail
         frame.pack();

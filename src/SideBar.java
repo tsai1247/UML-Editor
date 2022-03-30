@@ -39,7 +39,7 @@ public class SideBar extends JPanel{
                                 Main.menuBar.group.setEnabled(false);
                                 Main.menuBar.ungroup.setEnabled(true);
                                 Main.canva.ClearAllSelected();
-                                Main.canva.Repaint();
+                                Main.canva.repaint();
                             }
                             currentSelected = Selected.values()[i];
                             break;

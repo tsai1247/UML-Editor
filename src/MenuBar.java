@@ -55,7 +55,7 @@ public class MenuBar extends JMenuBar {
                 }
                 Main.canva.shapesList.add(new composite(shapes));
                 Main.canva.shapesList.lastElement().setSelected(true);
-                Main.canva.Repaint();
+                Main.canva.repaint();
                 group.setEnabled(false);
                 ungroup.setEnabled(true);
             }
@@ -70,7 +70,7 @@ public class MenuBar extends JMenuBar {
                     Main.canva.shapesList.lastElement().setSelected(true);
                 }
                 Main.canva.shapesList.remove(curComposite);
-                Main.canva.Repaint();
+                Main.canva.repaint();
                 group.setEnabled(true);
                 ungroup.setEnabled(false);
             }

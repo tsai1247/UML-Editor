@@ -3,8 +3,6 @@ package Shapes;
 import java.awt.*;
 import java.util.*;
 
-import javax.swing.JLabel;
-
 public abstract class Shapes
 {
     // Constructor
