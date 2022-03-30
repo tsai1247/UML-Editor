@@ -1,6 +1,4 @@
 import javax.swing.*;
-
-import Shapes.Component;
 import Shapes.Shapes;
 import Shapes.classification;
 import Shapes.composite;
@@ -8,28 +6,24 @@ import Shapes.use_case;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.awt.geom.*;
 import java.util.Vector;
 
 public class Canvas {
-    protected Vector<Component> shapes = new Vector<Component>();
+    protected Vector<Shapes> shapesList = new Vector<Shapes>();
     public JPanel panel = new JPanel();
     protected Shapes PressedShape = null;
     protected Point PressedPos = null;
 
     public void Display()
     {
-        System.out.println("\n----\n");
-        for(var i : shapes)
+        System.out.println("\n----");
+
+        for(var i : shapesList)
         {
-            if(i instanceof Shapes)
-            {
-                if(((Shapes)i).isSelected())
-                {
-                    System.out.println(i.getClass().getName() + ": (" + i.getX() + ", " + i.getY() + ")");
-                }
-            }
+            System.out.println(i.getClass().getName() + ": (" + i.getX() + ", " + i.getY() + ")" + ", Selected: " + i.isSelected());
         }
-        System.out.println("\n----\n");
+        System.out.println("----\n");
     }
     public Canvas()
     {
@@ -40,98 +34,72 @@ public class Canvas {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Click canvas at (" + e.getX() + ", " + e.getY() + ")");
-                
-                Shapes shape = null;
                 switch(SideBar.currentSelected)
                 {
                     case SELECT:
                         ClearAllSelected();
-                        var curShape = getClickedShape(e.getPoint());
+                        var curShape = getClickedShape(shapesList, e.getPoint());
                         if(curShape != null)
                         {
                             curShape.setSelected(true);
                         }
+
                         if(curShape instanceof composite)
                         {
                             Main.menuBar.group.setEnabled(false);
                             Main.menuBar.ungroup.setEnabled(true);
-                            PressedShape = curShape;
+                            composite.selectedComposite = (composite) curShape;
                         }
                         else
                         {
                             Main.menuBar.group.setEnabled(false);
                             Main.menuBar.ungroup.setEnabled(false);
+                            composite.selectedComposite = null;
                         }
                         break;
+
+                    case CLASS:
+                        shapesList.add(new classification(e.getPoint()));
+                        break;
+                    case USECASE:
+                        shapesList.add(new use_case(e.getPoint()));
+                        break;
+
                     case ASSOCIATION:
                     case COMPOSITION:
                     case GENERALIZATION:
-                        break;
-
-                    case CLASS:
-                        shape = new classification(e.getPoint());
-                        break;
-                    
-                        case USECASE:
-                        shape = new use_case(e.getPoint());
-                        break;
-
                     default:
                         break;
                 }
-
-                if(shape != null)
-                {
-                    shapes.add(shape);
-                }
                 Repaint();
-                super.mouseClicked(e);
-                Display();
             }
-
 
             @Override
             public void mousePressed(MouseEvent me) {
-                if(PressedShape != null)
-                    return;
-                switch(SideBar.currentSelected)
+                if(SideBar.currentSelected != SideBar.Selected.USECASE && SideBar.currentSelected != SideBar.Selected.CLASS)
                 {
-                    case USECASE:
-                    case CLASS:
-                        return;
-                    default:
-                        break;
+                    PressedShape = getClickedShape(shapesList, me.getPoint());
+                    PressedPos = me.getPoint();
                 }
-                PressedShape = getClickedShape(me.getPoint());
-                PressedPos = me.getPoint();
-                
-                super.mousePressed(me);
-                Display();
             }
 
             @Override
             public void mouseReleased(MouseEvent me) {
-                super.mouseReleased(me);
-                var curShape = getClickedShape(me.getPoint());
+                var releasedShape = getClickedShape(shapesList, me.getPoint());
                 switch(SideBar.currentSelected)
                 {
                     case SELECT:
-                        if(PressedPos != null && getDistance(PressedPos, me.getPoint()) > 10)
+                        if(PressedShape == null)        // select a region
                         {
-                            if(PressedShape == null)
-                            {
-                                SelectAllInRegion(PressedPos, me.getPoint());
-                            }
-                            else
-                            {
-                                PressedShape.setPoint(me.getPoint());
-                                Repaint();
-                            }
+                            SelectAllInRegion(PressedPos, me.getPoint());
+                        }
+                        else if(PressedPos != null && getDistance(PressedPos, me.getPoint()) > 15*15)     // move a Shapes
+                        {
+                            PressedShape.move(/* from */PressedPos, /* to */ me.getPoint());
                         }
                         break;
                     case ASSOCIATION:
-                        if(PressedShape != null && curShape != null)
+                        if(PressedShape != null && releasedShape != null)
                         {
                             // shapes.add(
                             //     new association(PressedShape, PressedPos, curShape, me.getPoint())
@@ -139,7 +107,7 @@ public class Canvas {
                         }
                         break;
                     case GENERALIZATION:
-                    if(PressedShape != null && curShape != null)
+                    if(PressedShape != null && releasedShape != null)
                         {
                             // shapes.add(
                             //     new generalization(PressedShape, PressedPos, curShape, me.getPoint())
@@ -147,7 +115,7 @@ public class Canvas {
                         }
                         break;
                     case COMPOSITION:
-                    if(PressedShape != null && curShape != null)
+                    if(PressedShape != null && releasedShape != null)
                         {
                             // shapes.add(
                             //     new composition(PressedShape, PressedPos, curShape, me.getPoint())
@@ -160,7 +128,6 @@ public class Canvas {
                 
                 PressedShape = null;
                 Repaint();
-                Display();
             }
 
             private double getDistance(Point startPos, Point endPos) {
@@ -169,35 +136,23 @@ public class Canvas {
                 return x*x + y*y;
             }
 
-            private boolean smaller(Point p1, Point p2)
-            {
-                return p1.getX() < p2.getX() && p1.getY() < p2.getY();
-            }
-
             private void SelectAllInRegion(Point startPos, Point endPos) {
                 NormalizeRectPos(startPos, endPos);
                 int cnt = 0;
                 Shapes curShape = null;
-                for(var i : shapes)
+                for(var i : shapesList)
                 {
-                    var rectStartPos = i.getPoint();
-                    var rectEndPos = new Point();
-                    rectEndPos.x += rectStartPos.getX() + i.getWidth();
-                    rectEndPos.y += rectStartPos.getY() + i.getHeight();
 
-                    boolean condition = smaller(startPos, rectStartPos) && smaller(rectEndPos, endPos);
-                    System.out.println(i.getClass().getName());
-                    
-                    if(i instanceof Shapes)
+                    if(inRegion(startPos, endPos, i))
                     {
-                        System.out.println("Selected: " + condition);
-                        ((Shapes)i).setSelected(condition);
-                        if(condition)
-                        {
-                            curShape = (Shapes) i;
-                            cnt++;
-                        }
+                        
+                        curShape =  i;
+                        cnt++;
+                        i.setSelected(true);
                     }
+                    else
+                        i.setSelected(false);
+
                 }
                 if(cnt > 1)
                 {
@@ -216,6 +171,13 @@ public class Canvas {
                 }
             }
 
+
+            private boolean inRegion(Point startPos, Point endPos, Shapes i) {
+                var rectStartPos = i.getPoint(0);
+                var rectEndPos = i.getPoint(8);
+
+                return smaller(startPos, rectStartPos) && smaller(rectEndPos, endPos);
+            }
             private void NormalizeRectPos(Point startPos, Point endPos) {
                 if(startPos.getX() > endPos.getX())
                 {
@@ -238,43 +200,76 @@ public class Canvas {
     }
 
     public void ClearAllSelected() {
-        for(var i : shapes)
+        for(var i : shapesList)
         {
-            if(i instanceof Shapes)
-                ((Shapes)i).setSelected(false);
+                i.setSelected(false);
         }
     }
+    private boolean smaller(Point p1, Point p2) {
+        return p1.getX() < p2.getX() && p1.getY() < p2.getY();
+    }
+    private boolean pointInRegion(Point startPos, Point endPos, Point pos) {
 
-    protected Shapes getClickedShape(Point point)
+        return smaller(startPos, pos) && smaller(pos, endPos);
+    }
+    protected Shapes getClickedShape(Vector<Shapes> shapesList, Point point)
     {
-
-        for (var shape : shapes)
+        for(int i=shapesList.size()-1; i >=0; i--)
         {
-            if(shape instanceof Shapes)
-            {
-                for(int i=0; i<shape.getShapes().size(); i++)
-                {
-                    if (shape.getShapes().get(i).contains(point))
-                    {
-                        return (Shapes) shape;
-                    }                    
-                }
-            }
+            var curShape = shapesList.get(i);
+            if(pointInRegion(curShape.getPoint(0), curShape.getPoint(8), point))
+                    return curShape;
         }
         return null;
     }
-    protected void Repaint() {
+
+    protected void Repaint()
+    {
         Graphics2D g = (Graphics2D) panel.getGraphics();
         g.clearRect(0, 0, panel.getWidth(), panel.getHeight());
-        for(var shape : shapes)
-        {
-            g.setStroke(new BasicStroke( shape.getStrokeWidth() ) );
-            for(int i=0; i<shape.getShapes().size(); i++)
-            {
-                g.setColor(shape.getColors().get(i));
-                g.draw(shape.getShapes().get(i));
+        Repaint(this.shapesList);
+    }
 
+    protected void Repaint(Vector<Shapes> shapesList) {
+        Graphics2D g = (Graphics2D) panel.getGraphics();
+        for(var shapes : shapesList)
+        {
+            if(shapes instanceof composite)
+            {
+                Repaint(((composite)shapes).getsubShapes());
             }
+
+            g.setStroke(new BasicStroke( shapes.getStrokeWidth() ) );
+            for(int i=0; i<shapes.getShapes().size(); i++)
+            {
+                g.setColor(shapes.getColors().get(i));
+                g.draw(shapes.getShapes().get(i));
+            }
+            if(shapes.isSelected())
+            {
+                PaintSelectSquare(shapes);
+            }
+        }
+    }
+
+    
+    private int selectedMarkSize = 10;
+    private Shape getSelectSquare(double posX, double posY)
+    {
+        var x = posX - selectedMarkSize/2;
+        var y = posY - selectedMarkSize/2;
+        return new Rectangle2D.Double(x, y, selectedMarkSize, selectedMarkSize);
+    }
+    
+    private void PaintSelectSquare(Shapes shapes) {
+        Graphics2D g = (Graphics2D) panel.getGraphics();
+        g.setStroke(new BasicStroke( 5 ) );
+        g.setColor(Color.PINK);
+        for(int i=1; i<8; i+=2)
+        {
+            var centerPos = shapes.getPoint(i);
+            var selectSquare = getSelectSquare(centerPos.getX(), centerPos.getY());
+            g.draw(selectSquare);
         }
     }
 }

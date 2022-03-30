@@ -4,24 +4,17 @@ import java.awt.Point;
 import java.util.Vector;
 
 public class composite extends Shapes {
-
-    protected Vector<Shapes> subShapes;
-    public composite(Vector<Shapes> subShapes)
+    public static composite selectedComposite = null;
+    public composite(Vector<Shapes> shapesList)
     {
-        super(getLeftTopPos(subShapes), getTotalWidth(subShapes), getTotalHeight(subShapes));
-        this.subShapes = subShapes;
-        for(var shape : subShapes)
-        {
-            for(int i=0; i<shape.getShapes().size(); i++)
-            {
-                this.Add(shape.getShapes().get(i), shape.getColors().get(i));
-            }
-        }
+        super(getLeftTopPos(shapesList), getTotalWidth(shapesList), getTotalHeight(shapesList));
+        this.shapesList = shapesList;
     }
 
+    protected Vector<Shapes> shapesList;
     public Vector<Shapes> getsubShapes()
     {
-        return this.subShapes;
+        return this.shapesList;
     }
 
     private static Point getLeftTopPos(Vector<Shapes> subShapes) {
@@ -60,25 +53,14 @@ public class composite extends Shapes {
     private static int getTotalHeight(Vector<Shapes> subShapes) {
         return (int) (getRightBottomPos(subShapes).getY() - getLeftTopPos(subShapes).getY());
     }
-
+    
     @Override
-    public void setPoint(Point pos) {
-        var difference = new Point((int)(pos.getX() - this.getX()), (int)(pos.getY() - this.getY()));
-        for(var shape: subShapes)
+    public void move(Point fromPos, Point toPos) {
+        super.move(fromPos, toPos);
+        for(var shape: shapesList)
         {
-            var curPosOfShape = new Point((int)(shape.getX() + difference.getX()), (int)(shape.getY() + difference.getY()));
-            shape.setPoint(curPosOfShape);
+            shape.move(fromPos, toPos);
         }
-        this.getShapes().clear();
-        this.getColors().clear();
-        
-        for(var shape : subShapes)
-        {
-            for(int i=0; i<shape.getShapes().size(); i++)
-            {
-                this.Add(shape.getShapes().get(i), shape.getColors().get(i));
-            }
-        }
-        super.setPoint(pos);
     }
+
 }

@@ -1,15 +1,11 @@
 package Shapes;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.util.*;
 
-public class Shapes extends Component
+public abstract class Shapes
 {
-    protected Point pos;
-    protected int width, height;
-    protected boolean _isSelected = false;
-    protected int selectedMarkSize = 10;
-
+    // Constructor
     public Shapes(Point pos, int width, int height)
     {
         this.pos = pos;
@@ -19,51 +15,18 @@ public class Shapes extends Component
 
     }
 
-    public boolean isSelected()
+    protected Point pos;
+    // 0 1 2
+    // 3 4 5
+    // 6 7 8
+    public Point getPoint(int index)
     {
-        return _isSelected;
-    }
-    public void setSelected(boolean isSelected)
-    {
-        if(this._isSelected == isSelected)   return;
-        this._isSelected = isSelected;
-
-        if(this._isSelected)
-        {
-            this.Add(getRectangle(this.getX() + this.width/2, this.getY(), selectedMarkSize), Color.PINK);
-            this.Add(getRectangle(this.getX() + this.width/2, this.getY() + this.height, selectedMarkSize), Color.PINK);
-            this.Add(getRectangle(this.getX(), this.getY() + this.height/2, selectedMarkSize), Color.PINK);
-            this.Add(getRectangle(this.getX() + this.width, this.getY() + this.height/2, selectedMarkSize), Color.PINK);
-        }
-        else
-        {
-            while(this.shapes.size() > 0)
-            {
-                if(this.shapes.lastElement() instanceof Rectangle2D)
-                {
-                    var curWidth = ((Rectangle2D)this.shapes.lastElement()).getWidth();
-                    var curHeight = ((Rectangle2D)this.shapes.lastElement()).getHeight();
-                    if(curWidth == curHeight)
-                        this.shapes.remove(this.shapes.size()-1);
-                    else
-                        break;
-                }
-                else
-                    break;
-            }
-        }
+        var x = this.getX() + (index % 3) * this.getWidth()/2.0;
+        var y = this.getY() + (index / 3) * this.getHeight()/2.0;
+        return new Point((int)x, (int)y);
     }
 
-    protected Shape getRectangle(Point center, int size)
-    {
-        return getRectangle(center.getX(), center.getY(), size);
-    }
-    protected Shape getRectangle(double posX, double posY, int size)
-    {
-        var x = posX - size/2;
-        var y = posY - size/2;
-        return new Rectangle2D.Double(x, y, selectedMarkSize, selectedMarkSize);
-    }
+    // public abstract void setPoint(Point pos);
     public Double getX()
     {
         return pos.getX();
@@ -72,7 +35,14 @@ public class Shapes extends Component
     {
         return pos.getY();
     }
+    public Point center()
+    {
+        int posX = (int) (pos.getX() + this.width/2);
+        int posY = (int) (pos.getY() + this.height/2);
+        return new Point(posX, posY);
+    }
 
+    private int width, height;
     public int getWidth()
     {
         return this.width;
@@ -83,20 +53,70 @@ public class Shapes extends Component
         return this.height;
     }
     
-    public Point getPoint()
+
+
+    private boolean _isSelected = false;
+    public boolean isSelected()
     {
-        return pos;
+        return _isSelected;
+    }
+    
+    
+    public void setSelected(boolean isSelected)
+    {
+        this._isSelected = isSelected;
     }
 
-    public Point center()
+
+    private float strokeWidth = 0;
+    public float getStrokeWidth()
     {
-        int posX = (int) (pos.getX() + this.width/2);
-        int posY = (int) (pos.getY() + this.height/2);
-        return new Point(posX, posY);
+        return this.strokeWidth;
     }
 
-    public void setPoint(Point pos) {
-        this.pos = pos;
+    private Vector<Shape> shapes = new Vector<Shape>();
+    public Vector<Shape> getShapes()
+    {
+        return this.shapes;
     }
+    
+    private Vector<Color> colors = new Vector<Color>();
+    public Vector<Color> getColors()
+    {
+        return this.colors;
+    }
+
+    public void Add(Shape shape, Color color)
+    {
+        this.shapes.add(shape);
+        this.colors.add(color);
+    }
+
+    public void move(Point fromPos, Point toPos)
+    {
+        this.pos = this.plus(this.pos, this.distance(fromPos, toPos));
+    }
+
+    protected Point distance(Point pos1, Point pos2)   // return pos2 - pos1
+    {
+        var x = pos2.getX() - pos1.getX();
+        var y = pos2.getY() - pos1.getY();
+        return new Point((int)x, (int)y);
+    }
+    protected Point plus(Point pos1, Point pos2)   // return pos2 - pos1
+    {
+        var x = pos2.getX() + pos1.getX();
+        var y = pos2.getY() + pos1.getY();
+        return new Point((int)x, (int)y);
+    }
+
+
+    
+    
+
+
+    
+
+
 
 }

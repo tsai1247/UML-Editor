@@ -40,33 +40,34 @@ public class MenuBar extends JMenuBar {
         group.addActionListener(new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Vector<Shapes> shapes = new Vector<Shapes>();
-                for(int i=0; i<Main.canva.shapes.size(); i++)
+                for(int i=0; i<Main.canva.shapesList.size(); i++)
                 {
-                    if(((Shapes)Main.canva.shapes.get(i)).isSelected())
+                    if(((Shapes)Main.canva.shapesList.get(i)).isSelected())
                     {
-                        shapes.add(((Shapes)Main.canva.shapes.get(i)));
+                        shapes.add(((Shapes)Main.canva.shapesList.get(i)));
                         shapes.lastElement().setSelected(false);;
-                        Main.canva.shapes.remove(i);
+                        Main.canva.shapesList.remove(i);
                         i--;
                     }
                 }
-                Main.canva.shapes.add(new composite(shapes));
-                ((Shapes)(Main.canva.shapes.lastElement())).setSelected(true);
+                Main.canva.shapesList.add(new composite(shapes));
+                ((Shapes)(Main.canva.shapesList.lastElement())).setSelected(true);
                 Main.canva.Repaint();
                 group.setEnabled(false);
                 ungroup.setEnabled(true);
+                Main.canva.Display();
             }
         });
 
         ungroup.addActionListener(new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                composite curComposite = (composite) Main.canva.PressedShape;
+                var curComposite = composite.selectedComposite;
                 for(var shape : curComposite.getsubShapes())
                 {
-                    Main.canva.shapes.add(shape);
-                    ((Shapes)Main.canva.shapes.lastElement()).setSelected(true);
+                    Main.canva.shapesList.add(shape);
+                    ((Shapes)Main.canva.shapesList.lastElement()).setSelected(true);
                 }
-                Main.canva.shapes.remove(curComposite);
+                Main.canva.shapesList.remove(curComposite);
                 Main.canva.Repaint();
                 group.setEnabled(true);
                 ungroup.setEnabled(false);

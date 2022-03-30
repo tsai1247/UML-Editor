@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.event.*;
 
 public class Main {
     
@@ -7,6 +8,7 @@ public class Main {
     public static SideBar sideBar = new SideBar();
     public static Canvas canva  = new Canvas();
 
+
     private static void createAndShowGUI() {
     //#region JFrame head
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -14,6 +16,7 @@ public class Main {
         frame = new JFrame("UML Editor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
+
     //#endregion
 
         frame.setJMenuBar(menuBar);
