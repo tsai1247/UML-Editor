@@ -1,8 +1,6 @@
 package Shapes;
 import java.awt.geom.*;
 
-import javax.swing.JLabel;
-
 import java.awt.*;
 
 public class classification extends Shapes{
@@ -17,7 +15,6 @@ public class classification extends Shapes{
             this.Add(rect, Color.BLACK);
         }
         this.setName("Class");
-        this.setNamePos(this.center());
     }
     
     @Override

@@ -1,8 +1,6 @@
 package Shapes;
 import java.awt.geom.*;
 
-import javax.swing.JLabel;
-
 import java.awt.*;
 
 
@@ -12,7 +10,6 @@ public class use_case extends Shapes{
         var Circle = new Ellipse2D.Double(this.getX(), this.getY(), this.getWidth(), this.getHeight());
         this.Add(Circle, Color.BLACK);
         this.setName("Use Case");
-        this.setNamePos(this.center());
     }
     
 

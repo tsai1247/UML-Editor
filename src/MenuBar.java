@@ -6,7 +6,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
-import javax.swing.border.Border;
 
 import Shapes.Shapes;
 import Shapes.composite;

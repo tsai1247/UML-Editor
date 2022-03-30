@@ -1,4 +1,3 @@
-import javax.sound.sampled.LineListener;
 import javax.swing.*;
 
 import Line.Line;

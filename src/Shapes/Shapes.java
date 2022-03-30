@@ -125,11 +125,6 @@ public abstract class Shapes
         return this.name.getText();
     }
     
-    private Point namePos;
-    public void setNamePos(Point pos)
-    {
-        this.namePos = pos;   
-    }
 
     public void setNameBound() {
         name.setBounds((int)(this.getX()), (int)(this.getY()), this.getWidth(), this.getHeight());
