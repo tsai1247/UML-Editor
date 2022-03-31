@@ -2,6 +2,7 @@ package Line;
 
 import java.awt.*;
 import java.util.*;
+
 import java.awt.geom.*;
 import Shapes.Shapes;
 
@@ -72,6 +73,63 @@ public abstract class Line
     public float getStrokeWidth()
     {
         return this.strokeWidth;
+    }
+    protected static double angle = Math.toRadians(45);
+    protected static int arrowLength = 15;
+    public static void setAngle(double degree)
+    {
+        angle = Math.toRadians(degree);
+    }
+    public static void setArrowLength(int newarrowLength)
+    {
+        arrowLength = newarrowLength;
+    }
+    public static int getAngle()
+    {
+        return (int)Math.toDegrees(angle);
+    }
+    public static int getArrowLength()
+    {
+        return arrowLength;
+    }
+    
+    protected Vector<Point> getArrowPoints(Line2D originLine, int arrowLength)
+    {
+        Vector<Point> ret = new Vector<Point>();
+        var vector = new Point((int)(originLine.getX2() - originLine.getX1()), (int)(originLine.getY2() - originLine.getY1()));
+        var newvector = new Point((int)(vector.getX() * Math.cos(angle) - vector.getY() * Math.sin(angle)), (int)(vector.getX()*Math.sin(angle) + vector.getY()*Math.cos(angle)));
+        newvector = extend(newvector, arrowLength);
+        var newpoint = new Point((int)(originLine.getX2() - newvector.getX()), (int)(originLine.getY2() - newvector.getY()));
+        ret.add(newpoint);
+
+        newvector = new Point((int)(vector.getX() * Math.cos(angle) + vector.getY()*Math.sin(angle)), (int)(-vector.getX()*Math.sin(angle) + vector.getY()*Math.cos(angle)));
+        newvector = extend(newvector, arrowLength);
+        newpoint = new Point((int)(originLine.getX2() - newvector.getX()), (int)(originLine.getY2() - newvector.getY()));
+        ret.add(newpoint);
+        return ret;
+    }
+
+    protected Point getVector(Point startPoint, Point endPoint)
+    {
+        var x = endPoint.getX() - startPoint.getX();
+        var y = endPoint.getY() - startPoint.getY();
+        return new Point((int)x, (int)y);
+    }
+    protected Point getVector(Line2D line)
+    {
+        var p1 = new Point((int)(line.getX1()), (int)(line.getY1()));
+        var p2 = new Point((int)(line.getX2()), (int)(line.getY2()));
+        return this.getVector(p1, p2);
+    }
+    protected Point extend(Point vector, double leng) {
+        var x = vector.getX()*leng / getLength(vector);
+        var y = vector.getY()*leng / getLength(vector);
+        return new Point((int)x, (int)y);
+    }
+    public double getLength(Point vector)
+    {
+        
+        return Math.sqrt(vector.getX() * vector.getX() + vector.getY() * vector.getY());
     }
 
 }

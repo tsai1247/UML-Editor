@@ -6,10 +6,12 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import Line.Line;
 import Shapes.Shapes;
 import Shapes.composite;
 
@@ -32,6 +34,7 @@ public class MenuBar extends JMenuBar {
     protected JMenu setting = new JMenu("Setting");
     protected JCheckBoxMenuItem cnameAutoUpdate = new JCheckBoxMenuItem("Preview when changing name");
     protected JCheckBoxMenuItem preferFontSize = new JCheckBoxMenuItem("Use preferred font size", true);
+    protected JMenuItem setArrow = new JMenuItem("Set arrow style");
 
     public MenuBar()
     {
@@ -48,6 +51,7 @@ public class MenuBar extends JMenuBar {
         this.add(setting);
         setting.add(cnameAutoUpdate);
         setting.add(preferFontSize);
+        setting.add(setArrow);
 
         this.add(help);
         help.add(about);
@@ -184,6 +188,109 @@ public class MenuBar extends JMenuBar {
                 Main.canva.repaint();
             }
             
+        });
+
+        setArrow.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                JFrame f = new JFrame();
+                JDialog msgbox = new JDialog(f);
+                msgbox.setTitle("Set Arrow Style");
+                msgbox.setLayout(new BorderLayout());
+                int originAngle = Line.getAngle();
+                JTextArea angle = new JTextArea(Integer.toString(originAngle));
+                
+                int originArrowLength =  Line.getArrowLength();
+                JTextArea length = new JTextArea(Integer.toString(originArrowLength));
+                JButton btn_OK = new JButton("OK"); 
+                JButton btn_Cancel = new JButton("Cancel");
+
+                btn_OK.setPreferredSize(new Dimension(80, 80));
+                btn_Cancel.setPreferredSize(new Dimension(80, 80));
+
+                var textChangedEvent = new DocumentListener() {
+                    @Override
+                    public void changedUpdate(DocumentEvent arg0) { }
+
+                    @Override
+                    public void insertUpdate(DocumentEvent arg0) {
+                        try
+                        {
+                            Line.setAngle(Integer.parseInt(angle.getText()));
+                        }
+                        catch(Exception e)
+                        {
+                            Line.setAngle(originAngle);
+                        }
+                        try
+                        {
+                            Line.setArrowLength(Integer.parseInt(length.getText()));
+                        }
+                        catch(Exception e)
+                        {
+                            Line.setArrowLength(originArrowLength);
+                        }
+                        Main.canva.repaint();
+                    }
+
+                    @Override
+                    public void removeUpdate(DocumentEvent arg0) {
+                        try
+                        {
+                            Line.setAngle(Integer.parseInt(angle.getText()));
+                        }
+                        catch(Exception e)
+                        {
+                            Line.setAngle(originAngle);
+                        }
+                        try
+                        {
+                            Line.setArrowLength(Integer.parseInt(length.getText()));
+                        }
+                        catch(Exception e)
+                        {
+                            Line.setArrowLength(originArrowLength);
+                        }
+                        Main.canva.repaint();
+                    }
+                };
+
+                angle.getDocument().addDocumentListener(textChangedEvent);
+                length.getDocument().addDocumentListener(textChangedEvent);
+
+
+
+
+                btn_OK.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        msgbox.setVisible(false);
+                    }
+                    
+                });
+                btn_Cancel.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        Line.setAngle(originAngle);
+                        Line.setArrowLength(originArrowLength);
+                        msgbox.setVisible(false);
+                    }
+                    
+                });
+
+                JPanel panel = new JPanel();
+                panel.setLayout(new GridLayout(2, 2));
+                msgbox.add(panel, BorderLayout.NORTH);
+                panel.add(new JLabel("Angle: "));
+                panel.add(angle);
+                panel.add(new Label("Length: "));
+                panel.add(length);
+                
+                msgbox.add(btn_OK, BorderLayout.WEST);
+                msgbox.add(btn_Cancel, BorderLayout.EAST);
+                msgbox.setSize(260, 150);
+                msgbox.setVisible(true);
+            }
         });
     }
 }
