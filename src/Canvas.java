@@ -344,12 +344,21 @@ public class Canvas extends JPanel{
                 }
                 if(shapes.getName() != null)
                 {
-                    g.setFont(new Font("TimesRoman", Font.BOLD, 20));
-                    FontMetrics fontMetrics = g.getFontMetrics();
-                    var marginX = shapes.getWidth() - fontMetrics.stringWidth(shapes.getName());
+                    var marginX = -1;
+                    double stringHeight = Double.MAX_VALUE;
+                    int fontsize = 24;
+                    do{
+                        g.setFont(new Font("TimesRoman", Font.BOLD, fontsize--));
+                        var fontMetrics = g.getFontMetrics();
+                        marginX = shapes.getWidth() - fontMetrics.stringWidth(shapes.getName());
+                        var frc = g.getFontRenderContext();
+                        var gv = g.getFont().createGlyphVector(frc, shapes.getName());
+                        stringHeight = gv.getPixelBounds(null, 0, 0).getHeight();
+                    }
+                    while(Main.menuBar.preferFontSize.isSelected() && (stringHeight > shapes.getHeight() / shapes.getSize() || marginX < shapes.getStrokeWidth()*2));
                     var x = shapes.getX() + marginX / 2;
+                    var y = shapes.center().getY() + stringHeight/2;
                     
-                    var y = shapes.center().getY();
                     g.drawString(shapes.getName(), (int)x, (int)y);
                 }
             }

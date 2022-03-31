@@ -14,6 +14,11 @@ public abstract class Shapes
         this.strokeWidth = 4;
     }
 
+    protected int size = 1;
+    public int getSize()
+    {
+        return this.size;
+    }
     protected Point pos;
     // 0 1 2
     // 3 4 5
